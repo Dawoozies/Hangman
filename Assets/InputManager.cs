@@ -6,7 +6,9 @@ using UnityEngine;
 public class InputManager : MonoBehaviour
 {
     public static List<Action<Vector2>> mouseInputActions = new();
-    public static List<Action<Vector2>> moveInputActions = new(); 
+    public static List<Action<Vector2>> moveInputActions = new();
+    public static List<Action<float>> mouseLeftClickActions = new();
+    float leftClickHeldTime = 0f;
     void Update()
     {
         Vector2 mouseScreenPos = Input.mousePosition;
@@ -20,6 +22,18 @@ public class InputManager : MonoBehaviour
         {
             action(moveInput);
         }
+        if(Input.GetMouseButton(0))
+        {
+            leftClickHeldTime += Time.deltaTime;
+        }
+        else
+        {
+            leftClickHeldTime = 0f;
+        }
+        foreach (Action<float> action in mouseLeftClickActions)
+        {
+            action(leftClickHeldTime);
+        }
     }
     public static void RegisterMouseInputCallback(Action<Vector2> action)
     {
@@ -28,5 +42,9 @@ public class InputManager : MonoBehaviour
     public static void RegisterMoveInputCallback(Action<Vector2> action)
     {
         moveInputActions.Add(action);
+    }
+    public static void RegisterMouseLeftClickHandler(Action<float> action)
+    {
+        mouseLeftClickActions.Add(action);
     }
 }
