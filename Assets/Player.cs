@@ -7,8 +7,12 @@ public class Player : MonoBehaviour
 {
     public float moveSpeed;
     Rigidbody2D rb;
-    Camera mainCamera;
+    public Transform trianglePivot;
     public SpriteRenderer mainTriangle;
+    public ParticleSystem gunParticleSystem;
+    ParticleSystem.EmissionModule emission;
+    Vector3 mouseLook;
+    public Transform mouseTarget;
     void Start()
     {
         InputManager.RegisterMouseInputCallback(MouseInputHandler);
@@ -16,11 +20,12 @@ public class Player : MonoBehaviour
         InputManager.RegisterMouseLeftClickHandler(MouseLeftClickHandler);
         rb = GetComponent<Rigidbody2D>();
         mainTriangle = GetComponentInChildren<SpriteRenderer>();
-        mainCamera = Camera.main;
+        emission = gunParticleSystem.emission;
     }
     public void MouseInputHandler(Vector2 mouseWorldPosition)
     {
-        transform.right = (Vector3)mouseWorldPosition - transform.position;
+        trianglePivot.right = (Vector3)mouseWorldPosition - transform.position;
+        mouseTarget.position = mouseWorldPosition;
     }
     public void MoveInputHandler(Vector2 moveInput)
     {
@@ -28,15 +33,16 @@ public class Player : MonoBehaviour
     }
     public void MouseLeftClickHandler(float heldTime)
     {
-        mainTriangle.transform.Rotate(new Vector3(0f, 0f, -45f)*Mathf.Pow(3f+heldTime, 2f)*Time.deltaTime);
         if(heldTime == 0)
         {
-            mainTriangle.transform.rotation = Quaternion.AngleAxis(90f, Vector3.forward);
+            mainTriangle.transform.localRotation = Quaternion.AngleAxis(-90f, Vector3.forward);
+            emission.rateOverTime = 0;
+        }
+        else
+        {
+            mainTriangle.transform.Rotate(new Vector3(0f, 0f, -45f) * Mathf.Pow(3f + heldTime, 2f) * Time.deltaTime, Space.Self);
+            emission.rateOverTime = Mathf.Lerp(0f, 10f, heldTime*4);
         }
     }
-    void FixedUpdate()
-    {
-        float cameraWidth = mainCamera.pixelWidth;
-        float cameraHeight = mainCamera.pixelHeight;
-    }
+
 }
