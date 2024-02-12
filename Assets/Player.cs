@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-
+using System;
 public class Player : MonoBehaviour
 {
     public float moveSpeed;
@@ -13,6 +12,24 @@ public class Player : MonoBehaviour
     ParticleSystem.EmissionModule emission;
     Vector3 mouseLook;
     public Transform mouseTarget;
+    public int maxHealth = 3;
+    int health = 3;
+    public int Health { 
+        get { return health; }
+        set {
+            if(value < health)
+            {
+                foreach (Action<int> action in playerLostHealthActions)
+                {
+                    action(value);
+                }
+            }
+            health = value;
+        }
+    }
+    public float maxFireRate = 10f;
+    public float fireRateBuildUpSpeed = 2f;
+    List<Action<int>> playerLostHealthActions = new();
     void Start()
     {
         InputManager.RegisterMouseInputCallback(MouseInputHandler);
@@ -41,8 +58,18 @@ public class Player : MonoBehaviour
         else
         {
             mainTriangle.transform.Rotate(new Vector3(0f, 0f, -45f) * Mathf.Pow(3f + heldTime, 2f) * Time.deltaTime, Space.Self);
-            emission.rateOverTime = Mathf.Lerp(0f, 10f, heldTime*4);
+            emission.rateOverTime = Mathf.Lerp(0f, maxFireRate, heldTime*fireRateBuildUpSpeed);
         }
     }
-
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Enemy")
+        {
+            health--;
+        }
+    }
+    public void RegisterPlayerLostHealthCallback(Action<int> a)
+    {
+        playerLostHealthActions.Add(a);
+    }
 }

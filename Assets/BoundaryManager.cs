@@ -47,15 +47,30 @@ public class BoundaryManager : MonoBehaviour
         Vector2 panelRightWorldPosition = boundaryRight.transform.position + Vector3.right*panelShift;
         Vector2 panelRightScreenPosition = mainCamera.WorldToScreenPoint(panelRightWorldPosition);
         panelRight.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, cameraHeight);
-        float panelRightWidth = (cameraWidth - panelRightScreenPosition.x);
+        float panelRightWidth = (cameraWidth - panelRightScreenPosition.x) + 100f;
         panelRight.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, panelRightWidth);
         panelRight.transform.position = panelRightScreenPosition + new Vector2(panelRightWidth / 2f,0f);
 
         Vector2 panelLeftWorldPosition = boundaryLeft.transform.position - Vector3.right * panelShift;
         Vector2 panelLeftScreenPosition = mainCamera.WorldToScreenPoint(panelLeftWorldPosition);
         panelLeft.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, cameraHeight);
-        float panelLeftWidth = panelLeftScreenPosition.x;
+        float panelLeftWidth = panelLeftScreenPosition.x + 100f;
         panelLeft.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, panelLeftWidth);
         panelLeft.transform.position = panelLeftScreenPosition - new Vector2(panelLeftWidth / 2f, 0f);
+
+        Vector2 panelBottomWorldPosition = boundaryBottom.transform.position + Vector3.up * panelShift;
+        Vector2 panelBottomScreenPosition = mainCamera.WorldToScreenPoint(panelBottomWorldPosition);
+        panelBottom.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, cameraWidth);
+        float panelBottomHeight = panelBottomScreenPosition.y + 100f;
+        panelBottom.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, panelBottomHeight);
+        panelBottom.transform.position = panelBottomScreenPosition - new Vector2(0f, panelBottomHeight / 2f);
+
+        Vector2 panelTopWorldPosition = boundaryTop.transform.position - Vector3.up * panelShift;
+        Vector2 panelTopScreenPosition = mainCamera.WorldToScreenPoint(panelTopWorldPosition);
+        panelTop.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, cameraWidth);
+        float panelTopHeight = (cameraHeight - panelTopScreenPosition.y) + 100f;
+        panelTop.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, panelTopHeight);
+        panelTop.transform.position = panelTopScreenPosition + new Vector2(0f, panelTopHeight / 2f);
+
     }
 }
