@@ -20,7 +20,12 @@ public class Enemy : MonoBehaviour
     }
     void Update()
     {
-        if(player == null)
+        if (GameManager.upgradeScreenActive)
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
+        if (player == null)
         {
             return;
         }
@@ -28,6 +33,11 @@ public class Enemy : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if (GameManager.upgradeScreenActive)
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
         rb.velocity = transform.right * currentMoveSpeed;
     }
     public void RegisterEnemyDeadCallback(Action<Enemy> a)

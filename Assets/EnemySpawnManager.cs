@@ -20,30 +20,40 @@ public class EnemySpawnManager : MonoBehaviour
     {
         mainCamera = Camera.main;
     }
+    public void ResetGame()
+    {
+        waveDifficulty = 1;
+        deadEnemies.AddRange(activeEnemies);
+        activeEnemies.Clear();
+        foreach (Enemy enemy in deadEnemies)
+        {
+            enemy.transform.position = GenerateSpawnLocation();
+            enemy.gameObject.SetActive(false);
+        }
+    }
     void Update()
     {
-        int difficultyMultiplier = 1;
+        if (GameManager.upgradeScreenActive)
+            return;
         float difficultyTimeReduction = 0f;
         float enemyMoveSpeedMultiplier = 1f;
+        
         if(waveDifficulty > 3)
         {
-            difficultyMultiplier = 2;
             difficultyTimeReduction = waveTime * 0.25f;
             enemyMoveSpeedMultiplier = 2f;
         }
         if(waveDifficulty > 7)
         {
-            difficultyMultiplier = 3;
             difficultyTimeReduction = waveTime * 0.5f;
             enemyMoveSpeedMultiplier = 4f;
         }
         if(waveDifficulty > 9)
         {
-            difficultyMultiplier = 5;
             difficultyTimeReduction = waveTime * 0.9f;
             enemyMoveSpeedMultiplier = 5f;
         }
-        enemyLimit = waveDifficulty * 10 * difficultyMultiplier;
+        enemyLimit = waveDifficulty * 4;
         if(activeEnemies.Count <= enemyLimit)
         {
             waveTimer += Time.deltaTime;
@@ -68,6 +78,8 @@ public class EnemySpawnManager : MonoBehaviour
             else
             {
                 Enemy selectedEnemy = deadEnemies[Random.Range(0, deadEnemies.Count)];
+                selectedEnemy.gameObject.SetActive(true);
+                selectedEnemy.moveSpeedMultiplier = enemyMoveSpeedMultiplier;
                 selectedEnemy.ReviveAtLocation(spawnLocation);
                 activeEnemies.Add(selectedEnemy);
                 deadEnemies.Remove(selectedEnemy);
@@ -115,6 +127,7 @@ public class EnemySpawnManager : MonoBehaviour
         activeEnemies.Remove(deadEnemy);
         deadEnemies.Add(deadEnemy);
         deadEnemy.transform.position = GenerateSpawnLocation();
+        deadEnemy.gameObject.SetActive(false);
     }
     public static void RegisterEnemySpawnCallback(Action<Enemy> a)
     {

@@ -12,8 +12,6 @@ public class Player : MonoBehaviour
     ParticleSystem.EmissionModule emission;
     Vector3 mouseLook;
     public Transform mouseTarget;
-    public int maxHealth = 3;
-    int health = 3;
     public int Health { 
         get { return health; }
         set {
@@ -27,9 +25,23 @@ public class Player : MonoBehaviour
             health = value;
         }
     }
+    public int maxHealth = 3;
+    int health = 3;
+    public float iFrameTime = 0.5f;
+    float iFrameTimer = 0f;
     public float maxFireRate = 10f;
     public float fireRateBuildUpSpeed = 2f;
     List<Action<int>> playerLostHealthActions = new();
+    public void ResetGame()
+    {
+        maxHealth = 3;
+        health = 3;
+        iFrameTime = 0.5f;
+        iFrameTimer = 0f;
+        maxFireRate = 10f;
+        fireRateBuildUpSpeed = 2f;
+        transform.position = Vector3.zero;
+    }
     void Start()
     {
         InputManager.RegisterMouseInputCallback(MouseInputHandler);
@@ -61,15 +73,43 @@ public class Player : MonoBehaviour
             emission.rateOverTime = Mathf.Lerp(0f, maxFireRate, heldTime*fireRateBuildUpSpeed);
         }
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Enemy")
+        {
+            DamagePlayer(collision);
+        }
+    }
     private void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "Enemy")
         {
-            health--;
+            DamagePlayer(collision);
         }
+    }
+    void DamagePlayer(Collision2D collision)
+    {
+        if(iFrameTimer > 0)
+        {
+            return;
+        }
+        Health--;
+        iFrameTimer = iFrameTime;
     }
     public void RegisterPlayerLostHealthCallback(Action<int> a)
     {
         playerLostHealthActions.Add(a);
+    }
+    private void Update()
+    {
+        if(iFrameTimer > 0)
+        {
+            iFrameTimer -= Time.deltaTime;
+            mainTriangle.color = Color.Lerp(Color.white, Color.clear, Mathf.RoundToInt(Mathf.PingPong(16f*Time.time, 1f)));
+        }
+        else
+        {
+            mainTriangle.color = Color.white;
+        }
     }
 }
