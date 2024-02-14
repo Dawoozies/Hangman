@@ -347,6 +347,7 @@ GameObject:
   - component: {fileID: 405599570}
   - component: {fileID: 405599571}
   - component: {fileID: 405599572}
+  - component: {fileID: 405599573}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -508,6 +509,19 @@ MonoBehaviour:
   upgradePanel: {fileID: 654934129}
   upgradeChoicePanel: {fileID: 1545367507}
   upgradeCardPrefab: {fileID: 5268707425389862301, guid: e60d2c6818c96304e97d81ac36268d4b, type: 3}
+--- !u!114 &405599573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405599566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9372b6f358d8f8469dd09046619bb50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletExplosion: {fileID: 2395087584180853180, guid: 79637ffce6c4ccc45978859c8d0434f2, type: 3}
 --- !u!1 &450635820
 GameObject:
   m_ObjectHideFlags: 0

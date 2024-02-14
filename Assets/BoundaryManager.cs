@@ -16,6 +16,7 @@ public class BoundaryManager : MonoBehaviour
     public RectTransform panelLeft;
     public RectTransform panelBottom;
     public RectTransform panelTop;
+
     Camera mainCamera;
     private void Start()
     {

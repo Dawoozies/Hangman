@@ -49,7 +49,8 @@ public class Enemy : MonoBehaviour
         Debug.Log("Collides with = " + other.gameObject.tag);
         if(health > 0)
         {
-            health--;
+            health -= GameManager.playerDamage;
+            Debug.Log("Damage = " + GameManager.playerDamage);
         }
         if (health <= 0)
         {

@@ -16,6 +16,7 @@ public class EnemySpawnManager : MonoBehaviour
     Camera mainCamera;
     public Player player;
     static List<Action<Enemy>> enemySpawnActions = new();
+    public static List<Action<Enemy>> enemyDeadActions = new();
     void Start()
     {
         mainCamera = Camera.main;
@@ -124,6 +125,10 @@ public class EnemySpawnManager : MonoBehaviour
     }
     void EnemyDeadHandler(Enemy deadEnemy)
     {
+        foreach (Action<Enemy> action in enemyDeadActions)
+        {
+            action(deadEnemy);
+        }
         activeEnemies.Remove(deadEnemy);
         deadEnemies.Add(deadEnemy);
         deadEnemy.transform.position = GenerateSpawnLocation();
@@ -132,5 +137,9 @@ public class EnemySpawnManager : MonoBehaviour
     public static void RegisterEnemySpawnCallback(Action<Enemy> a)
     {
         enemySpawnActions.Add(a);
+    }
+    public static void RegisterEnemyDeadCallback(Action<Enemy> a)
+    {
+        enemyDeadActions.Add(a);
     }
 }

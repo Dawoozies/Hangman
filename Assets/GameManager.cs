@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
         "Motherboard",
         "Integrity",
         "Moonstone",
-        "Echoloation",
+        "Echolocation",
         "Diamond",
         "Monochromatic",
         "Hypothermia",
@@ -169,8 +169,14 @@ public class GameManager : MonoBehaviour
     public RectTransform upgradeChoicePanel;
     public GameObject upgradeCardPrefab;
     List<UpgradeCard> upgradeCards = new();
+    Camera mainCamera;
+
+    public static List<Action<Upgrade, int>> upgradeCollectActions = new();
+    public static int playerDamage = 1;
     private void Start()
     {
+        playerDamage = 1;
+        mainCamera = Camera.main;
         lockoutText = lockoutPanel.GetComponentInChildren<TextMeshProUGUI>();
         lockoutPanel.SetActive(false);
         CreateVirtualKeyboard();
@@ -245,8 +251,17 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    //1440 -> cellheight = 100 --> takes up 200
+    //1440:200 -> 
+    //grid must take up 5*pixelHeight/36
     void CreateVirtualKeyboard()
     {
+        float cameraWidth = mainCamera.pixelWidth;
+        float cameraHeight = mainCamera.pixelHeight;
+        GridLayoutGroup keyboardLayout = letterButtonPanel.GetComponent<GridLayoutGroup>();
+        Debug.Log($"Size should be {letterButtonPanel.transform.position.y}");
+        float gridLayoutSize = 5 * (cameraHeight / 36f);
+        keyboardLayout.cellSize = new(gridLayoutSize/2f, gridLayoutSize/2f);
         letterButtonPanel.transform.position += new Vector3(0f, 65f, 0f);
         for(int i = 0; i < letters.Length; i++)
         {
@@ -334,6 +349,7 @@ public class GameManager : MonoBehaviour
         lockoutTimer = 0;
         lockoutTime = 1;
         ResetWord();
+        playerDamage = 1;
     }
     public void QuitGame()
     {
@@ -387,8 +403,20 @@ public class GameManager : MonoBehaviour
         {
             collectedUpgrades.Add(upgradeSelected, 1);
         }
+        foreach (Action<Upgrade, int> action in upgradeCollectActions)
+        {
+            action(upgradeSelected, collectedUpgrades[upgradeSelected]);
+        }
+        if(upgradeSelected.upgradeFlag.HasFlag(UpgradeFlag.BulletDamageUp))
+        {
+            playerDamage = 1 + collectedUpgrades[upgradeSelected];
+        }
         upgradePanel.SetActive(false);
         ResetWord();
+    }
+    public static void RegisterUpgradeCollectCallback(Action<Upgrade, int> a)
+    {
+        upgradeCollectActions.Add(a);
     }
 }
 [Serializable]
