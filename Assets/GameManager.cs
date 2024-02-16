@@ -173,6 +173,17 @@ public class GameManager : MonoBehaviour
 
     public static List<Action<Upgrade, int>> upgradeCollectActions = new();
     public static int playerDamage = 1;
+
+    public TextMeshProUGUI waveDifficultyText;
+    public TextMeshProUGUI wordsCompletedText;
+    public TextMeshProUGUI freeGuessesText;
+    public TextMeshProUGUI enemiesKilledText;
+
+    public static int enemiesKilled;
+    public static int wordsCompleted;
+    public static int maxFreeGuesses;
+    public static int freeGuessesLeft;
+
     private void Start()
     {
         playerDamage = 1;
@@ -296,9 +307,15 @@ public class GameManager : MonoBehaviour
                 {
                     upgradePanel.SetActive(true);
                     ResetUpgradeScreen();
+                    wordsCompleted++;
                 }
             }
         }
+
+        waveDifficultyText.text = $"Wave Difficulty \n {enemySpawnManager.waveDifficulty}";
+        wordsCompletedText.text = $"Words Completed \n {wordsCompleted}";
+        enemiesKilledText.text = $"Enemies Killed \n {enemiesKilled}";
+        freeGuessesText.text = $"Free Guesses \n {freeGuessesLeft}";
     }
     void LetterButtonClickHandler(LetterButton letterButtonPressed)
     {
@@ -350,6 +367,8 @@ public class GameManager : MonoBehaviour
         lockoutTime = 1;
         ResetWord();
         playerDamage = 1;
+        enemiesKilled = 0;
+        wordsCompleted = 0;
     }
     public void QuitGame()
     {
@@ -410,6 +429,11 @@ public class GameManager : MonoBehaviour
         if(upgradeSelected.upgradeFlag.HasFlag(UpgradeFlag.BulletDamageUp))
         {
             playerDamage = 1 + collectedUpgrades[upgradeSelected];
+        }
+        if(upgradeSelected.upgradeFlag.HasFlag(UpgradeFlag.FreeGuessesUp))
+        {
+            maxFreeGuesses = collectedUpgrades[upgradeSelected];
+            freeGuessesLeft = collectedUpgrades[upgradeSelected];
         }
         upgradePanel.SetActive(false);
         ResetWord();

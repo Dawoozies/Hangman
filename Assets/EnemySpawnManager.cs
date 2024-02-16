@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 public class EnemySpawnManager : MonoBehaviour
@@ -11,12 +12,37 @@ public class EnemySpawnManager : MonoBehaviour
     public GameObject enemyPrefab;
     public float waveTime;
     float waveTimer;
-    public List<Enemy> activeEnemies = new();
+    public static List<Enemy> activeEnemies = new();
     List<Enemy> deadEnemies = new();
     Camera mainCamera;
     public Player player;
     static List<Action<Enemy>> enemySpawnActions = new();
     public static List<Action<Enemy>> enemyDeadActions = new();
+    public static Vector2 GetClosestEnemyPosition(Vector2 position)
+    {
+        Enemy closestEnemy = null;
+        foreach (Enemy enemy in activeEnemies)
+        {
+            if(closestEnemy == null)
+            {
+                closestEnemy = enemy;
+                continue;
+            }
+            float closestDistSoFar = Vector2.Distance(closestEnemy.transform.position, position);
+            float currentDist = Vector2.Distance(enemy.transform.position, position);
+            if(currentDist < closestDistSoFar)
+            {
+                closestEnemy = enemy;
+            }
+        }
+        if(closestEnemy == null)
+        {
+            return new(0, 0);
+        }
+
+        return closestEnemy.transform.position;
+    }
+
     void Start()
     {
         mainCamera = Camera.main;
@@ -133,6 +159,8 @@ public class EnemySpawnManager : MonoBehaviour
         deadEnemies.Add(deadEnemy);
         deadEnemy.transform.position = GenerateSpawnLocation();
         deadEnemy.gameObject.SetActive(false);
+
+        GameManager.enemiesKilled++;
     }
     public static void RegisterEnemySpawnCallback(Action<Enemy> a)
     {

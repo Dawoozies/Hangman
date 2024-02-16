@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
 
 public class PlayerAltBulletsManager : MonoBehaviour
 {
+    public Player player;
     public GameObject bulletExplosion;
     List<ParticleSystem> activeBulletExplosions = new();
     List<ParticleSystem> inactiveBulletExplosions = new();
     int explosiveEnemiesRank = 0;
+
+    public GameObject bouncingBulletPrefab;
+    public List<BouncingBullet> bouncingBulletsNormal = new();
     void Start()
     {
         GameManager.RegisterUpgradeCollectCallback(UpgradeCollectHandler);
@@ -36,7 +39,18 @@ public class PlayerAltBulletsManager : MonoBehaviour
         if(upgradeCollected.upgradeFlag.HasFlag(UpgradeFlag.ExplosiveEnemies))
         {
             explosiveEnemiesRank = rank;
-        }    
+        }
+        if(upgradeCollected.upgradeFlag.HasFlag(UpgradeFlag.BounceShotNormal))
+        {
+            int toSpawn = rank - bouncingBulletsNormal.Count;
+            for (int i = 0; i < toSpawn; i++)
+            {
+                GameObject bouncingBulletObject = Instantiate(bouncingBulletPrefab);
+                BouncingBullet bouncingBullet = bouncingBulletObject.GetComponent<BouncingBullet>();
+                bouncingBulletsNormal.Add(bouncingBullet);
+                bouncingBullet.ResetBullet(player.transform.position);
+            }
+        }
     }
     void EnemyDeadHandler(Enemy deadEnemy)
     {
