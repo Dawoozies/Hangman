@@ -99,8 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f192eb8342e3b364aa0a82bc9b095893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 5
-  health: 5
+  maxHealth: 1
+  health: 1
   moveSpeed: 1
   player: {fileID: 0}
   moveSpeedMultiplier: 1

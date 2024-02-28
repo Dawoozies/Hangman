@@ -44,10 +44,28 @@ public class Enemy : MonoBehaviour
     {
         enemyDeadActions.Add(a);
     }
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.gameObject.tag == "PlayerBullets")
+        {
+            Damage();
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.gameObject.tag == "PlayerBullets")
+        {
+            Damage();
+        }
+    }
     private void OnParticleCollision(GameObject other)
     {
         Debug.Log("Collides with = " + other.gameObject.tag);
-        if(health > 0)
+        Damage();
+    }
+    void Damage()
+    {
+        if (health > 0)
         {
             health -= GameManager.playerDamage;
             Debug.Log("Damage = " + GameManager.playerDamage);

@@ -58,6 +58,18 @@ public class EnemySpawnManager : MonoBehaviour
             enemy.gameObject.SetActive(false);
         }
     }
+    public void KillAllEnemies()
+    {
+        GameManager.enemiesKilled += activeEnemies.Count;
+        deadEnemies.AddRange(activeEnemies);
+        activeEnemies.Clear();
+        foreach (Enemy enemy in deadEnemies)
+        {
+            enemy.transform.position = GenerateSpawnLocation();
+            enemy.gameObject.SetActive(false);
+        }
+
+    }
     void Update()
     {
         if (GameManager.upgradeScreenActive)

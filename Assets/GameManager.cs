@@ -62,7 +62,6 @@ public class GameManager : MonoBehaviour
         "Hangover",
         "Cache",
         "Caffeine",
-        "Dextroamphetamine",
         "Extension",
         "Sunlight",
         "Rose",
@@ -183,7 +182,7 @@ public class GameManager : MonoBehaviour
     public static int wordsCompleted;
     public static int maxFreeGuesses;
     public static int freeGuessesLeft;
-
+    
     private void Start()
     {
         playerDamage = 1;
@@ -212,6 +211,18 @@ public class GameManager : MonoBehaviour
     }
     void ResetWord()
     {
+        foreach (KeyValuePair<Upgrade, int> kvp in collectedUpgrades)
+        {
+            if(kvp.Key.upgradeFlag.HasFlag(UpgradeFlag.CorrectWordLowerWaveDifficulty))
+            {
+                enemySpawnManager.waveDifficulty -= kvp.Value;
+                if(enemySpawnManager.waveDifficulty < 1)
+                {
+                    enemySpawnManager.waveDifficulty = 1;
+                }
+            }
+        }
+        freeGuessesLeft = 3;
         int wordSelected = Random.Range(0, words.Count);
         string word = words[wordSelected];
         currentWord = word.ToUpper();
@@ -324,6 +335,13 @@ public class GameManager : MonoBehaviour
             return;
         bool guessCorrect = wordLetters.Contains(letterGuessed);
         Debug.Log("guessed " + letterGuessed);
+        foreach(KeyValuePair<Upgrade, int> kvp in collectedUpgrades)
+        {
+            if(kvp.Key.upgradeFlag.HasFlag(UpgradeFlag.CorrectLetterWipeEnemies))
+            {
+                enemySpawnManager.KillAllEnemies();
+            }
+        }
         if(guessCorrect)
         {
             wordLetters.Remove(letterGuessed);
@@ -338,16 +356,21 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            lockoutTimer = lockoutTime;
-            if(lockoutTime > 20f && lockoutTime < 30f)
+            if(freeGuessesLeft <= 0)
             {
-                lockoutTime += lockoutTime * 0.35f;
+                lockoutTimer = lockoutTime;
+                lockoutTime += lockoutTime * 0.75f;
+                if (lockoutTime > 20f)
+                {
+                    lockoutTime = 20f;
+                }
+                enemySpawnManager.waveDifficulty++;
+                freeGuessesLeft += maxFreeGuesses;
             }
             else
             {
-                lockoutTime += lockoutTime * 0.75f;
+                freeGuessesLeft--;
             }
-            enemySpawnManager.waveDifficulty++;
         }
         letterButtonPressed.Disable(guessCorrect);
     }
@@ -434,6 +457,10 @@ public class GameManager : MonoBehaviour
         {
             maxFreeGuesses = collectedUpgrades[upgradeSelected];
             freeGuessesLeft = collectedUpgrades[upgradeSelected];
+        }
+        if(upgradeSelected.upgradeFlag.HasFlag(UpgradeFlag.CorrectLetterWipeEnemies))
+        {
+            legendary.Remove(upgradeSelected);
         }
         upgradePanel.SetActive(false);
         ResetWord();

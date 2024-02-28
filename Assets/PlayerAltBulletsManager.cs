@@ -12,6 +12,8 @@ public class PlayerAltBulletsManager : MonoBehaviour
 
     public GameObject bouncingBulletPrefab;
     public List<BouncingBullet> bouncingBulletsNormal = new();
+    float bouncingBulletTimer = 0f;
+
     void Start()
     {
         GameManager.RegisterUpgradeCollectCallback(UpgradeCollectHandler);
@@ -33,6 +35,17 @@ public class PlayerAltBulletsManager : MonoBehaviour
             inactiveBulletExplosions.Add(system);
             activeBulletExplosions.Remove(system);
         }
+        if(bouncingBulletsNormal != null && bouncingBulletsNormal.Count > 0)
+        {
+            if (bouncingBulletTimer > 5f)
+            {
+                foreach (BouncingBullet bullet in bouncingBulletsNormal)
+                {
+                    bullet.ResetBullet(player.transform.position);
+                }
+                bouncingBulletTimer = 0f;
+            }
+        }
     }
     void UpgradeCollectHandler(Upgrade upgradeCollected, int rank)
     {
@@ -48,7 +61,6 @@ public class PlayerAltBulletsManager : MonoBehaviour
                 GameObject bouncingBulletObject = Instantiate(bouncingBulletPrefab);
                 BouncingBullet bouncingBullet = bouncingBulletObject.GetComponent<BouncingBullet>();
                 bouncingBulletsNormal.Add(bouncingBullet);
-                bouncingBullet.ResetBullet(player.transform.position);
             }
         }
     }
